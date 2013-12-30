@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DPlayer</string>
+    <string name="loadinfo">载入中，请稍后...</string>
+	<string name="sliding_menu_pager_name">DPlayer</string>
+</resources>
