@@ -54,7 +54,9 @@
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name="com.damon.ui.VitamioListActivity" >
+        <activity
+            android:name="com.damon.ui.SlidingMenuNestTabActivity"
+            android:configChanges="keyboardHidden|orientation" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -234,10 +236,7 @@
                 <data android:pathPattern=".*\\.mp4" />
             </intent-filter>          
         </activity>
-        <activity
-            android:name="com.damon.ui.SlidingMenuNestTabActivity"
-            android:configChanges="keyboardHidden|orientation" >
-        </activity>
+       
     </application>
 
 </manifest>

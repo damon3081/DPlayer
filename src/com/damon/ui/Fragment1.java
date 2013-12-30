@@ -1,28 +1,46 @@
 
 package com.damon.ui;
 
+
+
+import io.vov.vitamio.utils.FileUtils;
+import io.vov.vitamio.widget.VideoView;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-
 import com.ab.task.AbTaskItem;
 import com.ab.task.AbTaskListener;
 import com.ab.task.AbTaskQueue;
 import com.ab.view.listener.AbOnListViewListener;
 import com.ab.view.pullview.AbPullListView;
 import com.damon.R;
-import com.damon.adapter.ImageListAdapter;
+import com.damon.adapter.VideoListAdapter;
+import com.damon.database.SQLiteHelper;
+import com.damon.model.Audio;
+import com.damon.model.AudioProvider;
+import com.damon.model.Video;
+import com.damon.model.VideoProvider;
 
 
 public class Fragment1 extends Fragment {
@@ -34,7 +52,7 @@ public class Fragment1 extends Fragment {
 	private int currentPage = 1;
 	private AbTaskQueue mAbTaskQueue = null;
 	private ArrayList<String> mPhotoList = new ArrayList<String>();
-	private ImageListAdapter myListViewAdapter = null;
+	private VideoListAdapter myListViewAdapter = null;
 	private int total = 50;
 	private int pageSize = 5;
 
@@ -60,15 +78,21 @@ public class Fragment1 extends Fragment {
     	 list = new ArrayList<Map<String, Object>>();
     	
     	 //使用自定义的Adapter
-    	 myListViewAdapter = new ImageListAdapter(mActivity, list,R.layout.list_items,
-				new String[] { "itemsIcon", "itemsTitle","itemsText" }, new int[] { R.id.itemsIcon,
-						R.id.itemsTitle,R.id.itemsText });
+    	 myListViewAdapter = new VideoListAdapter(mActivity, list,R.layout.fragment_file_item,
+				new String[] { "itemsIcon", "itemsTitle","itemsTime","itemsSize" }, new int[] { R.id.thumbnail,
+						R.id.title,R.id.time,R.id.file_size });
     	 mAbPullListView.setAdapter(myListViewAdapter);
     	 //item被点击事件
     	 mAbPullListView.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				Map<String, Object> map = list.get(position-1);
+				Intent intent = new Intent(mActivity.getApplicationContext(), VideoPlayer.class);
+				intent.putExtra("path", map.get("itemsPath").toString());
+				intent.putExtra("title", map.get("itemsTitle").toString());
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				mActivity.getApplicationContext().startActivity(intent);
 			}
     	 });
 
@@ -98,20 +122,35 @@ public class Fragment1 extends Fragment {
 			@Override
 			public void get() {
 	   		    try {
-	   		    	Thread.sleep(1000);
-	   		    	currentPage = 1;
+	   		    	List<Video> videoList = new VideoProvider(mActivity.getApplicationContext()).getList();
 	   		    	newList = new ArrayList<Map<String, Object>>();
 	   		    	Map<String, Object> map = null;
-	   		    	
-	   		    	for (int i = 0; i < pageSize; i++) {
+	   				SQLiteHelper sqLiteHelper=new SQLiteHelper(mActivity.getApplicationContext());
+	   				SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+	   		    	for (Video video : videoList) {
+	   		    		if(video.getSize() == 0){
+		   					continue;
+		   				}
+		   		    	long position = 0;
 	   		    		map = new HashMap<String, Object>();
 	   					map.put("itemsIcon",mPhotoList.get(new Random().nextInt(mPhotoList.size())));
-		   		    	map.put("itemsTitle", "[Fragment1]"+(i+1));
-		   		    	map.put("itemsText", "[Fragment1]..."+(i+1));
+		   		    	map.put("itemsTitle", video.getTitle());		   		    	
+		   		    	map.put("itemsSize", video.getSize()/1024/1024+"M");
+		   		    	map.put("itemsPath", video.getPath());		   		    	
+		   				Cursor c = db.rawQuery("select * from files where path=? ", new String[]{video.getPath()});
+		   				if(c.moveToNext()){
+		   					position=c.getLong(2);
+		   				}
+		   				c.close();
+		   				map.put("itemsTime", stringForTime(position)+"/"+stringForTime(video.getDuration()));
+		   				
 		   		    	newList.add(map);
-	   				}
-	   		    } catch (Exception e) {
-	   		    }
+					}
+	   				db.close();
+	   		    	} 
+	   		    	catch (Exception e) {
+
+	   		    	}
 		  };
 		};
 		
@@ -140,7 +179,8 @@ public class Fragment1 extends Fragment {
 	   		    		map = new HashMap<String, Object>();
 	   					map.put("itemsIcon",mPhotoList.get(new Random().nextInt(mPhotoList.size())));
 	   			    	map.put("itemsTitle", "item上拉"+((currentPage-1)*pageSize+(i+1)));
-		   		    	map.put("itemsText", "item上拉..."+((currentPage-1)*pageSize+(i+1)));
+		   		    	map.put("itemsTime", "item上拉..."+((currentPage-1)*pageSize+(i+1)));
+		   		    	map.put("itemsSize", (i+1)+"M");
 		   		    	if((list.size()+newList.size()) < total){
 		   		    		newList.add(map);
 		   		    	}
@@ -175,6 +215,22 @@ public class Fragment1 extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 	}
+	
+	private String stringForTime(long timeMs) {
+		long totalSeconds = timeMs / 1000;
+
+		long seconds = totalSeconds % 60;
+		long minutes = (totalSeconds / 60) % 60;
+		long hours   = totalSeconds / 3600;
+        StringBuilder mFormatBuilder=new StringBuilder();
+        Formatter mFormatter=new Formatter(mFormatBuilder, Locale.getDefault());;
+        mFormatBuilder.setLength(0);
+        if (hours > 0) {
+            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        } else {
+            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+    }
 
 }
 
