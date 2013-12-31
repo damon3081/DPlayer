@@ -2,22 +2,25 @@ package com.damon.adapter;
 
 import java.util.List;
 import java.util.Map;
-import com.damon.global.Constant;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
+import android.graphics.drawable.TransitionDrawable;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.ab.bitmap.AbImageDownloader;
+import com.ab.global.AbConstant;
+import com.ab.util.AbImageUtil;
+import com.damon.R;
+import com.damon.global.Constant;
 
-public class VideoListAdapter extends BaseAdapter{
-	
-	private static String TAG = "VideoListAdapter";
+public class AudioListAdapter extends BaseAdapter{
+
+	private static String TAG = "ImageListAdapter";
 	private static final boolean D = Constant.DEBUG;
   
 	private Context mContext;
@@ -32,7 +35,6 @@ public class VideoListAdapter extends BaseAdapter{
     //view的id
     private int[] mTo;
     
-    
    /**
     * 构造方法
     * @param context
@@ -41,7 +43,7 @@ public class VideoListAdapter extends BaseAdapter{
     * @param from Map中的key
     * @param to view的id
     */
-    public VideoListAdapter(Context context, List data,
+    public AudioListAdapter(Context context, List data,
             int resource, String[] from, int[] to){
     	this.mContext = context;
     	this.mData = data;
@@ -50,7 +52,6 @@ public class VideoListAdapter extends BaseAdapter{
     	this.mTo = to;
         //用于将xml转为View
         this.mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        
     }   
     
     @Override
@@ -68,8 +69,7 @@ public class VideoListAdapter extends BaseAdapter{
       return position;
     }
     
-    @SuppressLint("NewApi")
-	@Override
+    @Override
     public View getView(int position, View convertView, ViewGroup parent){
     	  final ViewHolder holder;
           if(convertView == null){
@@ -80,8 +80,7 @@ public class VideoListAdapter extends BaseAdapter{
 	           //初始化布局中的元素
 			   holder.itemsIcon = ((ImageView) convertView.findViewById(mTo[0]));
 			   holder.itemsTitle = ((TextView) convertView.findViewById(mTo[1]));
-			   holder.itemsTime = ((TextView) convertView.findViewById(mTo[2]));
-			   holder.itemsSize = ((TextView) convertView.findViewById(mTo[3]));
+			   holder.itemsText = ((TextView) convertView.findViewById(mTo[2]));
 			   convertView.setTag(holder);
           }else{
         	   holder = (ViewHolder) convertView.getTag();
@@ -89,15 +88,9 @@ public class VideoListAdapter extends BaseAdapter{
           
 		  //获取该行的数据
           @SuppressWarnings("unchecked")
-		final Map<String, Object>  obj = (Map<String, Object>)mData.get(position);
+		  final Map<String, Object>  obj = (Map<String, Object>)mData.get(position);
           holder.itemsTitle.setText((String)obj.get("itemsTitle"));
-          holder.itemsTime.setText((String)obj.get("itemsTime"));
-          holder.itemsSize.setText((String)obj.get("itemsSize"));
-          Bitmap bm = (Bitmap)obj.get("itemsIcon");
-          if(bm != null){
-        	  holder.itemsIcon.setImageBitmap(bm);
-          }
-          
+          holder.itemsText.setText((String)obj.get("itemsText"));         
           return convertView;
     }
     
@@ -107,8 +100,8 @@ public class VideoListAdapter extends BaseAdapter{
 	static class ViewHolder {
 		ImageView itemsIcon;
 		TextView itemsTitle;
-		TextView itemsTime;
-		TextView itemsSize;
+		TextView itemsText;
 	}
-
+    
+	
 }

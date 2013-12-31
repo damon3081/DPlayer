@@ -16,15 +16,15 @@ public final class R {
 		public static final int mediacontroller_play01 = 0x7f020012;
 		public static final int mediacontroller_play02 = 0x7f020013;
 		public static final int mediacontroller_play_button = 0x7f020014;
-		public static final int scrubber_control_disabled_holo = 0x7f020029;
-		public static final int scrubber_control_focused_holo = 0x7f02002a;
-		public static final int scrubber_control_normal_holo = 0x7f02002b;
-		public static final int scrubber_control_pressed_holo = 0x7f02002c;
-		public static final int scrubber_control_selector_holo = 0x7f02002d;
-		public static final int scrubber_primary_holo = 0x7f02002e;
-		public static final int scrubber_progress_horizontal_holo_dark = 0x7f02002f;
-		public static final int scrubber_secondary_holo = 0x7f020030;
-		public static final int scrubber_track_holo_dark = 0x7f020031;
+		public static final int scrubber_control_disabled_holo = 0x7f02002a;
+		public static final int scrubber_control_focused_holo = 0x7f02002b;
+		public static final int scrubber_control_normal_holo = 0x7f02002c;
+		public static final int scrubber_control_pressed_holo = 0x7f02002d;
+		public static final int scrubber_control_selector_holo = 0x7f02002e;
+		public static final int scrubber_primary_holo = 0x7f02002f;
+		public static final int scrubber_progress_horizontal_holo_dark = 0x7f020030;
+		public static final int scrubber_secondary_holo = 0x7f020031;
+		public static final int scrubber_track_holo_dark = 0x7f020032;
 	}
 	public static final class id {
 		public static final int mediacontroller_file_name = 0x7f090013;
@@ -40,19 +40,19 @@ public final class R {
 		public static final int libarm = 0x7f040000;
 	}
 	public static final class string {
-		public static final int VideoView_error_button = 0x7f05000c;
-		public static final int VideoView_error_text_invalid_progressive_playback = 0x7f05000a;
-		public static final int VideoView_error_text_unknown = 0x7f05000b;
-		public static final int VideoView_error_title = 0x7f050009;
-		public static final int mediacontroller_play_pause = 0x7f05000d;
-		public static final int permission_group_tools_description = 0x7f050004;
-		public static final int permission_group_tools_label = 0x7f050003;
-		public static final int permission_receive_messages_description = 0x7f050006;
-		public static final int permission_receive_messages_label = 0x7f050005;
-		public static final int permission_write_providers_description = 0x7f050008;
-		public static final int permission_write_providers_label = 0x7f050007;
-		public static final int vitamio_init_decoders = 0x7f050002;
-		public static final int vitamio_library_app_name = 0x7f050001;
+		public static final int VideoView_error_button = 0x7f05000b;
+		public static final int VideoView_error_text_invalid_progressive_playback = 0x7f050009;
+		public static final int VideoView_error_text_unknown = 0x7f05000a;
+		public static final int VideoView_error_title = 0x7f050008;
+		public static final int mediacontroller_play_pause = 0x7f05000c;
+		public static final int permission_group_tools_description = 0x7f050003;
+		public static final int permission_group_tools_label = 0x7f050002;
+		public static final int permission_receive_messages_description = 0x7f050005;
+		public static final int permission_receive_messages_label = 0x7f050004;
+		public static final int permission_write_providers_description = 0x7f050007;
+		public static final int permission_write_providers_label = 0x7f050006;
+		public static final int vitamio_init_decoders = 0x7f050001;
+		public static final int vitamio_library_app_name = 0x7f050000;
 	}
 	public static final class style {
 		public static final int MediaController_SeekBar = 0x7f060000;

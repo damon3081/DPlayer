@@ -1,5 +1,6 @@
 package com.damon.ui;
 
+import io.vov.vitamio.LibsChecker;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -72,6 +73,8 @@ public class SlidingMenuNestTabActivity extends AbActivity {
  				}
 			}
 		});
+		if (!LibsChecker.checkVitamioLibs(this))
+			return;
 	}
 
 	@Override

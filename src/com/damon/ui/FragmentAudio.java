@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,19 +21,19 @@ import com.ab.task.AbTaskQueue;
 import com.ab.view.listener.AbOnListViewListener;
 import com.ab.view.pullview.AbPullListView;
 import com.damon.R;
-import com.damon.adapter.ImageListAdapter;
+import com.damon.adapter.AudioListAdapter;
+import com.damon.model.Audio;
+import com.damon.model.AudioProvider;
 
 
-public class Fragment4 extends Fragment {
+public class FragmentAudio extends Fragment {
 	
 	private Activity mActivity = null;
 	private List<Map<String, Object>> list = null;
 	private List<Map<String, Object>> newList = null;
 	private AbPullListView mAbPullListView = null;
-	private int currentPage = 1;
 	private AbTaskQueue mAbTaskQueue = null;
-	private ArrayList<String> mPhotoList = new ArrayList<String>();
-	private ImageListAdapter myListViewAdapter = null;
+	private AudioListAdapter myListViewAdapter = null;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) { 
@@ -42,13 +41,7 @@ public class Fragment4 extends Fragment {
 		 //application = (MyApplication) mActivity.getApplication();
 		 
 		 View view = inflater.inflate(R.layout.pull_list, null);
-		 mPhotoList.add("http://img01.taobaocdn.com/bao/uploaded/i3/13215035600700175/T1C2mzXthaXXXXXXXX_!!0-item_pic.jpg_230x230.jpg");  
-		 mPhotoList.add("http://img01.taobaocdn.com/bao/uploaded/i2/13215025617307680/T1AQqAXqpeXXXXXXXX_!!0-item_pic.jpg_230x230.jpg");
-		 mPhotoList.add("http://img01.taobaocdn.com/bao/uploaded/i1/13215035569460099/T16GuzXs0cXXXXXXXX_!!0-item_pic.jpg_230x230.jpg");
-		 mPhotoList.add("http://img01.taobaocdn.com/bao/uploaded/i2/13215023694438773/T1lImmXElhXXXXXXXX_!!0-item_pic.jpg_230x230.jpg");
-		 mPhotoList.add("http://img01.taobaocdn.com/bao/uploaded/i3/13215023521330093/T1BWuzXrhcXXXXXXXX_!!0-item_pic.jpg_230x230.jpg");  
-		 mPhotoList.add("http://img01.taobaocdn.com/bao/uploaded/i4/13215035563144015/T1Q.eyXsldXXXXXXXX_!!0-item_pic.jpg_230x230.jpg");  
-		 mPhotoList.add("http://img01.taobaocdn.com/bao/uploaded/i3/13215023749568975/T1UKWCXvpXXXXXXXXX_!!0-item_pic.jpg_230x230.jpg"); 
+		
 		 mAbTaskQueue = AbTaskQueue.getInstance();
 	     //获取ListView对象
          mAbPullListView = (AbPullListView)view.findViewById(R.id.mListView);
@@ -59,8 +52,8 @@ public class Fragment4 extends Fragment {
     	 list = new ArrayList<Map<String, Object>>();
     	
     	 //使用自定义的Adapter
-    	 myListViewAdapter = new ImageListAdapter(mActivity, list,R.layout.list_items,
-				new String[] { "itemsIcon", "itemsTitle","itemsText" }, new int[] { R.id.itemsIcon,
+    	 myListViewAdapter = new AudioListAdapter(mActivity, list,R.layout.list_items,
+				new String[] { "itemsPath", "itemsTitle","itemsText" }, new int[] { R.id.itemsIcon,
 						R.id.itemsTitle,R.id.itemsText });
     	 mAbPullListView.setAdapter(myListViewAdapter);
     	 //item被点击事件
@@ -68,9 +61,14 @@ public class Fragment4 extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				Map<String, Object> map = list.get(position-1);
+				Intent intent = new Intent(mActivity.getApplicationContext(), VideoPlayer.class);
+				intent.putExtra("path", map.get("itemsPath").toString());
+				intent.putExtra("title", map.get("itemsTitle").toString());
+				startActivity(intent);
 			}
     	 });
-
+    	 mAbPullListView.showUpdateHeaderHeight();
 		 return view;
 	} 
 	
@@ -97,57 +95,24 @@ public class Fragment4 extends Fragment {
 			@Override
 			public void get() {
 	   		    try {
-	   		    	Thread.sleep(1000);
-	   		    	currentPage = 1;
+	   		    	
 	   		    	newList = new ArrayList<Map<String, Object>>();
 	   		    	Map<String, Object> map = null;
-	   		    	
-	   		    	for (int i = 0; i < 10; i++) {
+	   		    	List<Audio> audoList = new AudioProvider(mActivity.getApplicationContext()).getList();
+	   		    	for (Audio audio : audoList) {
 	   		    		map = new HashMap<String, Object>();
-	   					map.put("itemsIcon",mPhotoList.get(new Random().nextInt(mPhotoList.size())));
-		   		    	map.put("itemsTitle", "[Fragment4]"+i);
-		   		    	map.put("itemsText", "[Fragment4]..."+i);
+	   					map.put("itemsPath",audio.getPath());
+		   		    	map.put("itemsTitle", audio.getTitle());
+		   		    	map.put("itemsText", audio.getArtist());
 		   		    	newList.add(map);
-	   				}
+					}
+	   		    	
 	   		    } catch (Exception e) {
 	   		    }
 		  };
 		};
 		
-		final AbTaskItem item2 = new AbTaskItem();
-		item2.listener = new AbTaskListener() {
-
-			@Override
-			public void update() {
-				if(newList!=null && newList.size()>0){
-					list.addAll(newList);
-					myListViewAdapter.notifyDataSetChanged();
-					newList.clear();
-                }
-				mAbPullListView.stopLoadMore();
-			}
-
-			@Override
-			public void get() {
-	   		    try {
-	   		    	currentPage++;
-	   		    	Thread.sleep(1000);
-	   		    	newList = new ArrayList<Map<String, Object>>();
-                    Map<String, Object> map = null;
-	   		    	
-	   		    	for (int i = 0; i < 10; i++) {
-	   		    		map = new HashMap<String, Object>();
-	   					map.put("itemsIcon",mPhotoList.get(new Random().nextInt(mPhotoList.size())));
-		   		    	map.put("itemsTitle", "item上拉"+i);
-		   		    	map.put("itemsText", "item上拉..."+i);
-		   		    	newList.add(map);
-	   				}
-	   		    } catch (Exception e) {
-	   		    	currentPage--;
-	   		    	newList.clear();
-	   		    }
-		  };
-		};
+		
 		
 		mAbPullListView.setAbOnListViewListener(new AbOnListViewListener(){
 
@@ -158,7 +123,7 @@ public class Fragment4 extends Fragment {
 
 			@Override
 			public void onLoadMore() {
-				mAbTaskQueue.execute(item2);
+				mAbTaskQueue.execute(item1);
 			}
 			
 		});

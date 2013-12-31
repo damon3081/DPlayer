@@ -2,15 +2,12 @@ package com.damon.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
 import com.ab.view.sliding.AbSlidingTabView;
 import com.damon.R;
 
@@ -38,10 +35,9 @@ public class SlidingTabFragment extends Fragment {
 			}
 			
 		});*/
-
-		Fragment1 page1 = new Fragment1();
+		FragmentLocalVideo page1 = new FragmentLocalVideo();
 		FragmentOnline page2 = new FragmentOnline();
-		Fragment4 page3 = new Fragment4();
+		FragmentAudio page3 = new FragmentAudio();
 		Fragment5 page4 = new Fragment5();
 		
 		

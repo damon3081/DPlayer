@@ -75,9 +75,6 @@ public class VideoPlayer extends Activity implements OnCompletionListener {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		if (!LibsChecker.checkVitamioLibs(this))
-			return;
-
 		Intent intent = getIntent();
 		mPath = intent.getStringExtra("path");
 		mTitle = intent.getStringExtra("title");
@@ -86,8 +83,10 @@ public class VideoPlayer extends Activity implements OnCompletionListener {
 				mPath = intent.getData().toString();
 			}else {
 				Toast.makeText(this, "视频无法播放！", 100).show();
+				finish();
 			}
 		}
+		
 		
 		setContentView(R.layout.videoview);
 		mVideoView = (VideoView) findViewById(R.id.surface_view);
@@ -187,6 +186,15 @@ public class VideoPlayer extends Activity implements OnCompletionListener {
 	
 
 	
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		if(mVideoView != null){
+			mVideoView.stopPlayback();
+		}	
+		super.onDestroy();
+	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {

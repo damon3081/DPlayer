@@ -27,6 +27,7 @@
             android:layout_marginLeft="5dip"
             android:layout_marginTop="5dip"
             android:paddingBottom="2dip"
+            android:background="@drawable/music_icon"
             android:scaleType="fitXY" />
     </RelativeLayout>
 
